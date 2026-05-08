@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "convex deploy --cmd 'vite build' --cmd-url-env-var-name VITE_CONVEX_URL",
+    "build:vite": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",

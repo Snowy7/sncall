@@ -100,26 +100,35 @@ src/
 
 ## Deploy
 
-### Convex
+The default `build` script wraps `vite build` with `convex deploy`, so a single command pushes the backend and builds the frontend together. CI just needs one Convex env var.
 
-Already deployed by `bunx convex dev`. For production, run `bunx convex deploy` (or push from CI with `CONVEX_DEPLOY_KEY`).
+### Vercel
 
-### Frontend
+1. **Connect** the GitHub repo to a new Vercel project. Framework preset: **Other** (Vercel auto-detects Nitro from the build output).
+2. **Production deploy key** — in [Convex dashboard](https://dashboard.convex.dev) → your project → Settings → Generate Production Deploy Key.
+3. **Vercel env vars** (Project Settings → Environment Variables):
+   - `CONVEX_DEPLOY_KEY` — the prod deploy key from step 2
+   - `VITE_CLERK_PUBLISHABLE_KEY` — Clerk prod publishable key (`pk_live_…`)
+   - `CLERK_SECRET_KEY` — Clerk prod secret key (`sk_live_…`)
+4. **Convex prod env vars** — once, from your machine:
+   ```bash
+   bunx convex env set CLERK_JWT_ISSUER_DOMAIN https://your-app.clerk.accounts.dev --prod
+   bunx convex env set LIVEKIT_URL wss://your-project.livekit.cloud --prod
+   bunx convex env set LIVEKIT_API_KEY APIxxx --prod
+   bunx convex env set LIVEKIT_API_SECRET secretxxx --prod
+   ```
+5. **Deploy** — push to `main`. Build command stays the default `bun run build` (which runs `convex deploy --cmd 'vite build'`). `VITE_CONVEX_URL` is auto-injected by `convex deploy`.
 
-This is a TanStack Start app, deployable to anything that runs Nitro:
+### Other platforms
 
-- **Vercel** — `bun run build`, then deploy `.output/`
-- **Netlify** — same
-- **Cloudflare Workers** — configure `nitro` preset
-- **Node** — `node .output/server/index.mjs`
-
-Set production env vars (`VITE_CONVEX_URL`, `VITE_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`) in your hosting provider.
+Same idea — set `CONVEX_DEPLOY_KEY` + the Clerk vars in the build environment, then run `bun run build`. The output is in `.output/` and runs anywhere Nitro deploys (Netlify, Cloudflare Workers with the right preset, plain Node via `node .output/server/index.mjs`).
 
 ## Scripts
 
 ```bash
 bun run dev          # vite dev server
-bun run build        # production build
+bun run build        # convex deploy + vite build (used by CI)
+bun run build:vite   # just vite build (local sanity check, no convex deploy)
 bun run preview      # preview production build
 bun run typecheck    # tsc --noEmit
 bun run lint         # eslint
