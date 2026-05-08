@@ -25,13 +25,16 @@ import {
 import { Track, type Participant } from "livekit-client"
 import "@livekit/components-styles"
 import { toast } from "sonner"
+import { MobileSidebarTrigger, MobileMembersTrigger } from "./mobile-nav"
 
 export function VoiceView({
   channelId,
   channelName,
+  serverId,
 }: {
   channelId: Id<"channels">
   channelName: string
+  serverId: Id<"servers">
 }) {
   const issue = useAction(api.livekit.issueToken)
   const join = useMutation(api.voice.join)
@@ -82,19 +85,27 @@ export function VoiceView({
         audio
         video={false}
         onDisconnected={handleLeave}
-        className="flex h-svh flex-1 flex-col bg-background"
+        className="flex h-svh min-w-0 flex-1 flex-col bg-background"
       >
-        <ConnectedRoom channelName={channelName} onLeave={handleLeave} />
+        <ConnectedRoom
+          channelName={channelName}
+          serverId={serverId}
+          onLeave={handleLeave}
+        />
         <RoomAudioRenderer />
       </LiveKitRoom>
     )
   }
 
   return (
-    <div className="flex h-svh flex-1 flex-col bg-background">
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/40 px-4">
-        <SpeakerHigh className="size-5 text-muted-foreground" />
-        <span className="font-medium">{channelName}</span>
+    <div className="flex h-svh min-w-0 flex-1 flex-col bg-background">
+      <header className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border/40 px-2 md:px-4">
+        <MobileSidebarTrigger serverId={serverId} />
+        <SpeakerHigh className="size-5 shrink-0 text-muted-foreground" />
+        <span className="truncate font-medium">{channelName}</span>
+        <div className="ml-auto flex items-center gap-1">
+          <MobileMembersTrigger serverId={serverId} />
+        </div>
       </header>
 
       <div className="grid flex-1 place-items-center p-6">
@@ -151,9 +162,11 @@ export function VoiceView({
 
 function ConnectedRoom({
   channelName,
+  serverId,
   onLeave,
 }: {
   channelName: string
+  serverId: Id<"servers">
   onLeave: () => void
 }) {
   const participants = useParticipants()
@@ -208,16 +221,19 @@ function ConnectedRoom({
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/40 px-4">
-        <SpeakerHigh className="size-5 text-emerald-500" />
-        <span className="font-medium">{channelName}</span>
+      <header className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border/40 px-2 md:px-4">
+        <MobileSidebarTrigger serverId={serverId} />
+        <SpeakerHigh className="size-5 shrink-0 text-emerald-500" />
+        <span className="truncate font-medium">{channelName}</span>
         <span className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          Connected · {participants.length}
+          <span className="hidden sm:inline">Connected · </span>
+          {participants.length}
         </span>
+        <MobileMembersTrigger serverId={serverId} />
       </header>
 
-      <div ref={audioContainerRef} className="flex-1 overflow-y-auto p-6">
+      <div ref={audioContainerRef} className="flex-1 overflow-y-auto p-3 sm:p-6">
         {videoTracks.length > 0 ? (
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
             {videoTracks.map((t) => (
@@ -225,12 +241,7 @@ function ConnectedRoom({
             ))}
           </div>
         ) : (
-          <div
-            className="grid gap-3"
-            style={{
-              gridTemplateColumns: `repeat(${Math.min(participants.length || 1, 4)}, minmax(0, 1fr))`,
-            }}
-          >
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4">
             {participants.map((p) => (
               <ParticipantTile key={p.sid} participant={p} />
             ))}
@@ -238,17 +249,15 @@ function ConnectedRoom({
         )}
       </div>
 
-      <div className="shrink-0 border-t border-border/40 bg-sidebar/40 px-4 py-3">
-        <div className="mx-auto flex max-w-2xl items-center justify-center gap-2">
+      <div className="shrink-0 border-t border-border/40 bg-sidebar/40 px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-4">
+        <div className="mx-auto flex max-w-2xl items-center justify-center gap-1.5 sm:gap-2">
           <ControlButton
-            active={micOn}
             onClick={toggleMic}
             label={micOn ? "Mute" : "Unmute"}
             icon={micOn ? <Microphone className="size-5" /> : <MicrophoneSlash className="size-5" />}
             danger={!micOn}
           />
           <ControlButton
-            active={camOn}
             onClick={toggleCam}
             label={camOn ? "Stop video" : "Start video"}
             icon={
@@ -261,7 +270,6 @@ function ConnectedRoom({
             danger={!camOn}
           />
           <ControlButton
-            active={!deafened}
             onClick={toggleDeafen}
             label={deafened ? "Undeafen" : "Deafen"}
             icon={
@@ -273,9 +281,14 @@ function ConnectedRoom({
             }
             danger={deafened}
           />
-          <Button onClick={onLeave} variant="destructive" size="lg" className="ml-2">
+          <Button
+            onClick={onLeave}
+            variant="destructive"
+            size="lg"
+            className="ml-1 h-12 rounded-full px-4 sm:ml-2 sm:px-6"
+          >
             <PhoneSlash className="size-5" />
-            Leave
+            <span className="hidden sm:inline">Leave</span>
           </Button>
         </div>
       </div>
@@ -283,31 +296,47 @@ function ConnectedRoom({
   )
 }
 
+function parseParticipantMetadata(metadata: string | undefined): {
+  imageUrl?: string
+} {
+  if (!metadata) return {}
+  try {
+    const m = JSON.parse(metadata)
+    return { imageUrl: typeof m?.imageUrl === "string" ? m.imageUrl : undefined }
+  } catch {
+    return {}
+  }
+}
+
 function ParticipantTile({ participant }: { participant: Participant }) {
   const isSpeaking = participant.isSpeaking
   const muted = participant.isMicrophoneEnabled === false
   const name = participant.name || participant.identity
+  const { imageUrl } = parseParticipantMetadata(participant.metadata)
   return (
     <div
-      className={`relative aspect-video rounded-xl border bg-card/40 p-6 transition ${
+      className={`relative aspect-square rounded-xl border bg-card/40 p-4 transition sm:aspect-video sm:p-6 ${
         isSpeaking
           ? "border-emerald-500 shadow-[0_0_0_3px_oklch(0.7_0.15_160_/_0.25)]"
           : "border-border/60"
       }`}
     >
-      <div className="flex h-full flex-col items-center justify-center gap-3">
+      <div className="flex h-full flex-col items-center justify-center gap-2 sm:gap-3">
         <Avatar
-          className={`size-20 transition ${isSpeaking ? "ring-2 ring-emerald-500" : ""}`}
+          className={`size-14 transition sm:size-20 ${
+            isSpeaking ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-background" : ""
+          }`}
         >
-          <AvatarFallback className="text-2xl">
+          {imageUrl ? <AvatarImage src={imageUrl} alt={name} /> : null}
+          <AvatarFallback className="text-base sm:text-2xl">
             {initialsFromName(name)}
           </AvatarFallback>
         </Avatar>
-        <div className="flex items-center gap-1.5 text-sm">
+        <div className="flex items-center gap-1.5 text-xs sm:text-sm">
           {muted ? (
-            <MicrophoneSlash className="size-3.5 text-rose-500" />
+            <MicrophoneSlash className="size-3.5 text-rose-500" weight="fill" />
           ) : null}
-          <span className="font-medium">{name}</span>
+          <span className="truncate font-medium">{name}</span>
         </div>
       </div>
     </div>
@@ -346,7 +375,6 @@ function ControlButton({
   label,
   danger,
 }: {
-  active: boolean
   onClick: () => void
   icon: React.ReactNode
   label: string

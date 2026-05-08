@@ -7,15 +7,18 @@ import { Hash, PaperPlaneRight, Trash, PencilSimple, X, Check } from "@phosphor-
 import { Textarea } from "@/components/ui/textarea"
 import { formatTimestamp, initialsFromName } from "@/lib/format"
 import { toast } from "sonner"
+import { MobileSidebarTrigger, MobileMembersTrigger } from "./mobile-nav"
 
 export function ChatView({
   channelId,
   channelName,
   topic,
+  serverId,
 }: {
   channelId: Id<"channels">
   channelName: string
   topic?: string
+  serverId: Id<"servers">
 }) {
   const messages = useQuery(api.messages.list, { channelId, limit: 200 })
   const send = useMutation(api.messages.send)
@@ -81,16 +84,20 @@ export function ChatView({
   }, [messages])
 
   return (
-    <div className="flex h-svh flex-1 flex-col bg-background">
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/40 px-4">
-        <Hash className="size-5 text-muted-foreground" />
-        <span className="font-medium">{channelName}</span>
+    <div className="flex h-svh min-w-0 flex-1 flex-col bg-background">
+      <header className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border/40 px-2 md:px-4">
+        <MobileSidebarTrigger serverId={serverId} />
+        <Hash className="size-5 shrink-0 text-muted-foreground" />
+        <span className="truncate font-medium">{channelName}</span>
         {topic ? (
           <>
-            <span className="mx-2 h-4 w-px bg-border" />
-            <span className="truncate text-sm text-muted-foreground">{topic}</span>
+            <span className="mx-2 hidden h-4 w-px shrink-0 bg-border md:inline-block" />
+            <span className="hidden truncate text-sm text-muted-foreground md:inline">{topic}</span>
           </>
         ) : null}
+        <div className="ml-auto flex items-center gap-1">
+          <MobileMembersTrigger serverId={serverId} />
+        </div>
       </header>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4">
@@ -136,7 +143,7 @@ export function ChatView({
         )}
       </div>
 
-      <div className="shrink-0 px-4 pb-4">
+      <div className="shrink-0 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-4 sm:pb-4">
         <div className="rounded-xl border border-border/60 bg-card/40 backdrop-blur focus-within:border-primary/60 transition">
           <Textarea
             ref={taRef}
@@ -149,17 +156,21 @@ export function ChatView({
               }
             }}
             placeholder={`Message #${channelName}`}
-            className="min-h-[44px] max-h-40 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0 px-3 py-2.5"
+            className="min-h-[44px] max-h-40 resize-none border-0 bg-transparent px-3 py-2.5 text-base shadow-none focus-visible:ring-0 sm:text-sm"
             rows={1}
           />
-          <div className="flex items-center justify-between px-2 pb-2">
-            <span className="text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-between gap-2 px-2 pb-2">
+            <span className="hidden text-[11px] text-muted-foreground sm:inline">
               Enter to send · Shift+Enter for newline
+            </span>
+            <span className="sm:hidden text-[11px] text-muted-foreground">
+              Tap send
             </span>
             <Button
               size="sm"
               onClick={onSend}
               disabled={sending || content.trim().length === 0}
+              className="shrink-0"
             >
               <PaperPlaneRight className="size-4" />
               Send

@@ -4,6 +4,7 @@ import { api } from "@/lib/api"
 import { ChatCircleDots, UsersThree } from "@phosphor-icons/react"
 import { CreateServerButton } from "@/components/create-server-button"
 import { Button } from "@/components/ui/button"
+import { MobileSidebarTrigger } from "@/components/mobile-nav"
 
 export const Route = createFileRoute("/app/")({ component: AppHome })
 
@@ -11,9 +12,10 @@ function AppHome() {
   const servers = useQuery(api.servers.list)
 
   return (
-    <div className="flex h-svh flex-1 flex-col bg-background">
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border/40 px-4">
-        <ChatCircleDots className="size-5 text-muted-foreground" />
+    <div className="flex h-svh min-w-0 flex-1 flex-col bg-background">
+      <header className="flex h-12 shrink-0 items-center gap-1.5 border-b border-border/40 px-2 md:px-4">
+        <MobileSidebarTrigger />
+        <ChatCircleDots className="size-5 shrink-0 text-muted-foreground" />
         <span className="font-medium">Home</span>
       </header>
       <div className="grid flex-1 place-items-center px-6">
@@ -25,7 +27,12 @@ function AppHome() {
             <>
               <h2 className="text-xl font-medium">Pick a server</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Choose a server from the left rail to start chatting.
+                <span className="hidden md:inline">
+                  Choose a server from the left rail to start chatting.
+                </span>
+                <span className="md:hidden">
+                  Tap the menu in the top-left to pick a server.
+                </span>
               </p>
             </>
           ) : (

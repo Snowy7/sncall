@@ -36,6 +36,7 @@ function ChannelPage() {
         <VoiceView
           channelId={channel._id}
           channelName={channel.name}
+          serverId={serverId as Id<"servers">}
         />
         <MemberList serverId={serverId as Id<"servers">} />
       </>
@@ -48,6 +49,7 @@ function ChannelPage() {
         channelId={channel._id}
         channelName={channel.name}
         topic={channel.topic}
+        serverId={serverId as Id<"servers">}
       />
       <MemberList serverId={serverId as Id<"servers">} />
     </>

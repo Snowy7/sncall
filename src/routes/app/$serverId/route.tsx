@@ -8,7 +8,9 @@ function ServerLayout() {
   const { serverId } = Route.useParams()
   return (
     <>
-      <ChannelSidebar serverId={serverId as Id<"servers">} />
+      <div className="hidden md:flex">
+        <ChannelSidebar serverId={serverId as Id<"servers">} />
+      </div>
       <Outlet />
     </>
   )

@@ -30,6 +30,7 @@ export const issueToken = action({
     const at = new AccessToken(apiKey, apiSecret, {
       identity: me._id,
       name: me.name,
+      metadata: JSON.stringify({ imageUrl: me.imageUrl ?? null }),
       ttl: 60 * 60,
     })
     at.addGrant({

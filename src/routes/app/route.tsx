@@ -14,7 +14,9 @@ function AppShell() {
       <Show when="signed-in">
         <AuthBootstrap>
           <div className="flex h-svh w-full overflow-hidden">
-            <ServerList />
+            <div className="hidden md:flex">
+              <ServerList />
+            </div>
             <Outlet />
           </div>
         </AuthBootstrap>
