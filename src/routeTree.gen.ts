@@ -8,59 +8,246 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root"
-import { Route as IndexRouteImport } from "./routes/index"
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as InviteCodeRouteImport } from './routes/invite.$code'
+import { Route as AppServerIdRouteRouteImport } from './routes/app/$serverId/route'
+import { Route as AppServerIdIndexRouteImport } from './routes/app/$serverId/index'
+import { Route as AppServerIdChannelIdRouteImport } from './routes/app/$serverId/$channelId'
 
-const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const InviteCodeRoute = InviteCodeRouteImport.update({
+  id: '/invite/$code',
+  path: '/invite/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppServerIdRouteRoute = AppServerIdRouteRouteImport.update({
+  id: '/$serverId',
+  path: '/$serverId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppServerIdIndexRoute = AppServerIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppServerIdRouteRoute,
+} as any)
+const AppServerIdChannelIdRoute = AppServerIdChannelIdRouteImport.update({
+  id: '/$channelId',
+  path: '/$channelId',
+  getParentRoute: () => AppServerIdRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute
+  '/': typeof IndexRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/app/$serverId': typeof AppServerIdRouteRouteWithChildren
+  '/invite/$code': typeof InviteCodeRoute
+  '/app/': typeof AppIndexRoute
+  '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
+  '/app/$serverId/': typeof AppServerIdIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute
+  '/': typeof IndexRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/invite/$code': typeof InviteCodeRoute
+  '/app': typeof AppIndexRoute
+  '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
+  '/app/$serverId': typeof AppServerIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  "/": typeof IndexRoute
+  '/': typeof IndexRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/app/$serverId': typeof AppServerIdRouteRouteWithChildren
+  '/invite/$code': typeof InviteCodeRoute
+  '/app/': typeof AppIndexRoute
+  '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
+  '/app/$serverId/': typeof AppServerIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: "/"
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/sign-in'
+    | '/sign-up'
+    | '/app/$serverId'
+    | '/invite/$code'
+    | '/app/'
+    | '/app/$serverId/$channelId'
+    | '/app/$serverId/'
   fileRoutesByTo: FileRoutesByTo
-  to: "/"
-  id: "__root__" | "/"
+  to:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/invite/$code'
+    | '/app'
+    | '/app/$serverId/$channelId'
+    | '/app/$serverId'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/sign-in'
+    | '/sign-up'
+    | '/app/$serverId'
+    | '/invite/$code'
+    | '/app/'
+    | '/app/$serverId/$channelId'
+    | '/app/$serverId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
+  InviteCodeRoute: typeof InviteCodeRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/"
-      path: "/"
-      fullPath: "/"
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/invite/$code': {
+      id: '/invite/$code'
+      path: '/invite/$code'
+      fullPath: '/invite/$code'
+      preLoaderRoute: typeof InviteCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/$serverId': {
+      id: '/app/$serverId'
+      path: '/$serverId'
+      fullPath: '/app/$serverId'
+      preLoaderRoute: typeof AppServerIdRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/$serverId/': {
+      id: '/app/$serverId/'
+      path: '/'
+      fullPath: '/app/$serverId/'
+      preLoaderRoute: typeof AppServerIdIndexRouteImport
+      parentRoute: typeof AppServerIdRouteRoute
+    }
+    '/app/$serverId/$channelId': {
+      id: '/app/$serverId/$channelId'
+      path: '/$channelId'
+      fullPath: '/app/$serverId/$channelId'
+      preLoaderRoute: typeof AppServerIdChannelIdRouteImport
+      parentRoute: typeof AppServerIdRouteRoute
     }
   }
 }
 
+interface AppServerIdRouteRouteChildren {
+  AppServerIdChannelIdRoute: typeof AppServerIdChannelIdRoute
+  AppServerIdIndexRoute: typeof AppServerIdIndexRoute
+}
+
+const AppServerIdRouteRouteChildren: AppServerIdRouteRouteChildren = {
+  AppServerIdChannelIdRoute: AppServerIdChannelIdRoute,
+  AppServerIdIndexRoute: AppServerIdIndexRoute,
+}
+
+const AppServerIdRouteRouteWithChildren =
+  AppServerIdRouteRoute._addFileChildren(AppServerIdRouteRouteChildren)
+
+interface AppRouteRouteChildren {
+  AppServerIdRouteRoute: typeof AppServerIdRouteRouteWithChildren
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppServerIdRouteRoute: AppServerIdRouteRouteWithChildren,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
+  InviteCodeRoute: InviteCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx"
-import type { createStart } from "@tanstack/react-start"
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
