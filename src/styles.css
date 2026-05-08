@@ -131,3 +131,27 @@
     @apply font-mono;
     }
 }
+
+@keyframes blob-drift {
+  0%, 100% { transform: translate3d(0,0,0) scale(1); }
+  33%      { transform: translate3d(8%, -6%, 0) scale(1.08); }
+  66%      { transform: translate3d(-6%, 6%, 0) scale(0.94); }
+}
+@keyframes shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-blob       { animation: blob-drift 22s ease-in-out infinite; }
+.animate-blob-slow  { animation: blob-drift 32s ease-in-out infinite; }
+.animate-shimmer    { animation: shimmer 8s ease-in-out infinite; background-size: 200% 200%; }
+.animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+.animate-fade-up    { animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
