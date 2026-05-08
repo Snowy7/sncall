@@ -13,8 +13,13 @@ function SSOCallback() {
         <p className="text-sm text-muted-foreground">finishing sign in…</p>
       </div>
       <AuthenticateWithRedirectCallback
+        signInUrl="/sign-in"
+        signUpUrl="/sign-up"
+        continueSignUpUrl="/sign-up/continue"
         signInForceRedirectUrl="/app"
         signUpForceRedirectUrl="/app"
+        signInFallbackRedirectUrl="/app"
+        signUpFallbackRedirectUrl="/app"
       />
     </div>
   )

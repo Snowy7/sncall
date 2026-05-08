@@ -15,6 +15,7 @@ import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as SignUpSsoCallbackRouteImport } from './routes/sign-up.sso-callback'
+import { Route as SignUpContinueRouteImport } from './routes/sign-up.continue'
 import { Route as SignInSsoCallbackRouteImport } from './routes/sign-in.sso-callback'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as AppServerIdRouteRouteImport } from './routes/app/$serverId/route'
@@ -51,6 +52,11 @@ const SignUpSsoCallbackRoute = SignUpSsoCallbackRouteImport.update({
   path: '/sso-callback',
   getParentRoute: () => SignUpRoute,
 } as any)
+const SignUpContinueRoute = SignUpContinueRouteImport.update({
+  id: '/continue',
+  path: '/continue',
+  getParentRoute: () => SignUpRoute,
+} as any)
 const SignInSsoCallbackRoute = SignInSsoCallbackRouteImport.update({
   id: '/sso-callback',
   path: '/sso-callback',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/app/$serverId': typeof AppServerIdRouteRouteWithChildren
   '/invite/$code': typeof InviteCodeRoute
   '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
+  '/sign-up/continue': typeof SignUpContinueRoute
   '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
   '/app/': typeof AppIndexRoute
   '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRouteWithChildren
   '/invite/$code': typeof InviteCodeRoute
   '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
+  '/sign-up/continue': typeof SignUpContinueRoute
   '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
   '/app': typeof AppIndexRoute
   '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/app/$serverId': typeof AppServerIdRouteRouteWithChildren
   '/invite/$code': typeof InviteCodeRoute
   '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
+  '/sign-up/continue': typeof SignUpContinueRoute
   '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
   '/app/': typeof AppIndexRoute
   '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/app/$serverId'
     | '/invite/$code'
     | '/sign-in/sso-callback'
+    | '/sign-up/continue'
     | '/sign-up/sso-callback'
     | '/app/'
     | '/app/$serverId/$channelId'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/invite/$code'
     | '/sign-in/sso-callback'
+    | '/sign-up/continue'
     | '/sign-up/sso-callback'
     | '/app'
     | '/app/$serverId/$channelId'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/app/$serverId'
     | '/invite/$code'
     | '/sign-in/sso-callback'
+    | '/sign-up/continue'
     | '/sign-up/sso-callback'
     | '/app/'
     | '/app/$serverId/$channelId'
@@ -205,6 +217,13 @@ declare module '@tanstack/react-router' {
       path: '/sso-callback'
       fullPath: '/sign-up/sso-callback'
       preLoaderRoute: typeof SignUpSsoCallbackRouteImport
+      parentRoute: typeof SignUpRoute
+    }
+    '/sign-up/continue': {
+      id: '/sign-up/continue'
+      path: '/continue'
+      fullPath: '/sign-up/continue'
+      preLoaderRoute: typeof SignUpContinueRouteImport
       parentRoute: typeof SignUpRoute
     }
     '/sign-in/sso-callback': {
@@ -284,10 +303,12 @@ const SignInRouteWithChildren =
   SignInRoute._addFileChildren(SignInRouteChildren)
 
 interface SignUpRouteChildren {
+  SignUpContinueRoute: typeof SignUpContinueRoute
   SignUpSsoCallbackRoute: typeof SignUpSsoCallbackRoute
 }
 
 const SignUpRouteChildren: SignUpRouteChildren = {
+  SignUpContinueRoute: SignUpContinueRoute,
   SignUpSsoCallbackRoute: SignUpSsoCallbackRoute,
 }
 
