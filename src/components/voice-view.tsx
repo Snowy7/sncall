@@ -189,14 +189,20 @@ function ConnectedRoom({
   }
 
   function toggleDeafen() {
-    const next = !deafened
-    setDeafened(next)
-    if (audioContainerRef.current) {
-      audioContainerRef.current
-        .querySelectorAll("audio")
-        .forEach((a) => (a.muted = next))
-    }
+    setDeafened((d) => !d)
   }
+
+  useEffect(() => {
+    const el = audioContainerRef.current
+    if (!el) return
+    const apply = () => {
+      el.querySelectorAll("audio").forEach((a) => (a.muted = deafened))
+    }
+    apply()
+    const observer = new MutationObserver(apply)
+    observer.observe(el, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [deafened, participants.length])
 
   const videoTracks = tracks.filter((t) => t.publication?.track)
 

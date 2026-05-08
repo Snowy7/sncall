@@ -25,9 +25,19 @@ export function ChatView({
   const taRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    if (!scrollRef.current) return
-    scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    const el = scrollRef.current
+    if (!el) return
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+    if (distanceFromBottom < 200) {
+      el.scrollTop = el.scrollHeight
+    }
   }, [messages?.length])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+  }, [channelId])
 
   async function onSend() {
     const text = content.trim()
