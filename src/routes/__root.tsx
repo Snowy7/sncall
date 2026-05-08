@@ -36,7 +36,7 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body className="bg-background text-foreground antialiased">
-        <ClerkProvider>
+        <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
           <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
             <Outlet />
             <Toaster position="bottom-right" />
