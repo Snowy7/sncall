@@ -8,11 +8,18 @@
  * @module
  */
 
+import type * as access from "../access.js";
 import type * as channels from "../channels.js";
+import type * as dms from "../dms.js";
+import type * as files from "../files.js";
 import type * as livekit from "../livekit.js";
 import type * as members from "../members.js";
 import type * as messages from "../messages.js";
+import type * as polls from "../polls.js";
+import type * as reactions from "../reactions.js";
+import type * as readState from "../readState.js";
 import type * as servers from "../servers.js";
+import type * as typing from "../typing.js";
 import type * as users from "../users.js";
 import type * as voice from "../voice.js";
 
@@ -23,11 +30,18 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  access: typeof access;
   channels: typeof channels;
+  dms: typeof dms;
+  files: typeof files;
   livekit: typeof livekit;
   members: typeof members;
   messages: typeof messages;
+  polls: typeof polls;
+  reactions: typeof reactions;
+  readState: typeof readState;
   servers: typeof servers;
+  typing: typeof typing;
   users: typeof users;
   voice: typeof voice;
 }>;

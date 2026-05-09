@@ -21,6 +21,7 @@ import {
 import { CreateChannelButton } from "@/components/create-channel-button"
 import { InviteDialog } from "@/components/invite-dialog"
 import { UserPanel } from "@/components/user-panel"
+import { VoiceDock } from "@/components/voice/voice-dock"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useNavigate } from "@tanstack/react-router"
@@ -29,6 +30,13 @@ export function ChannelSidebar({ serverId }: { serverId: Id<"servers"> }) {
   const server = useQuery(api.servers.get, { serverId })
   const channels = useQuery(api.channels.listForServer, { serverId })
   const params = useParams({ strict: false }) as { channelId?: string }
+  const textChannelIds = (channels ?? [])
+    .filter((c) => c.type === "text")
+    .map((c) => c._id)
+  const unread = useQuery(
+    api.readState.summary,
+    textChannelIds.length > 0 ? { channelIds: textChannelIds } : "skip",
+  )
   const remove = useMutation(api.servers.remove)
   const leave = useMutation(api.servers.leave)
   const navigate = useNavigate()
@@ -151,16 +159,21 @@ export function ChannelSidebar({ serverId }: { serverId: Id<"servers"> }) {
           serverId={serverId}
           createType="text"
         >
-          {text.map((c) => (
-            <ChannelRow
-              key={c._id}
-              serverId={serverId}
-              channelId={c._id}
-              name={c.name}
-              icon={<Hash className="size-4" />}
-              active={params.channelId === c._id}
-            />
-          ))}
+          {text.map((c) => {
+            const u = unread?.[c._id]
+            return (
+              <ChannelRow
+                key={c._id}
+                serverId={serverId}
+                channelId={c._id}
+                name={c.name}
+                icon={<Hash className="size-4" />}
+                active={params.channelId === c._id}
+                unread={u?.unread ?? 0}
+                mentions={u?.mentions ?? 0}
+              />
+            )
+          })}
         </Section>
 
         <Section
@@ -181,6 +194,7 @@ export function ChannelSidebar({ serverId }: { serverId: Id<"servers"> }) {
         </Section>
       </div>
 
+      <VoiceDock />
       <UserPanel />
     </aside>
   )
@@ -228,13 +242,19 @@ function ChannelRow({
   name,
   icon,
   active,
+  unread,
+  mentions,
 }: {
   serverId: Id<"servers">
   channelId: Id<"channels">
   name: string
   icon: React.ReactNode
   active: boolean
+  unread?: number
+  mentions?: number
 }) {
+  const hasUnread = !active && (unread ?? 0) > 0
+  const hasMentions = !active && (mentions ?? 0) > 0
   return (
     <Link
       to="/app/$serverId/$channelId"
@@ -242,11 +262,28 @@ function ChannelRow({
       className={`group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm transition ${
         active
           ? "bg-accent text-foreground"
-          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+          : hasUnread
+            ? "text-foreground hover:bg-accent/50"
+            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
       }`}
     >
-      <span className="text-muted-foreground">{icon}</span>
-      <span className="truncate">{name}</span>
+      <span
+        className={
+          hasUnread ? "text-foreground" : "text-muted-foreground"
+        }
+      >
+        {icon}
+      </span>
+      <span className={`truncate ${hasUnread ? "font-semibold" : ""}`}>
+        {name}
+      </span>
+      {hasMentions ? (
+        <span className="ml-auto inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white tabular-nums">
+          {mentions}
+        </span>
+      ) : hasUnread ? (
+        <span className="ml-auto size-2 rounded-full bg-foreground" />
+      ) : null}
     </Link>
   )
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useRouter } from "@tanstack/react-router"
+import { useRouter, useRouterState } from "@tanstack/react-router"
 import {
   Sheet,
   SheetContent,
@@ -9,12 +9,15 @@ import {
 import { List, UsersThree } from "@phosphor-icons/react"
 import { ServerList } from "./server-list"
 import { ChannelSidebar } from "./channel-sidebar"
+import { DmSidebar } from "./dm/dm-sidebar"
 import { MemberListInner } from "./member-list"
 import type { Id } from "@/lib/api"
 
 export function MobileSidebarTrigger({ serverId }: { serverId?: Id<"servers"> }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
+  const path = useRouterState({ select: (s) => s.location.pathname })
+  const onDms = path.startsWith("/app/dms")
 
   useEffect(() => {
     const unsub = router.subscribe("onResolved", () => setOpen(false))
@@ -39,7 +42,9 @@ export function MobileSidebarTrigger({ serverId }: { serverId?: Id<"servers"> })
       >
         <SheetTitle className="sr-only">Servers and channels</SheetTitle>
         <ServerList />
-        {serverId ? (
+        {onDms ? (
+          <DmSidebar />
+        ) : serverId ? (
           <ChannelSidebar serverId={serverId} />
         ) : (
           <div className="flex flex-1 items-center justify-center bg-sidebar/40 p-4 text-center text-xs text-muted-foreground">

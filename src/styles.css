@@ -155,3 +155,15 @@
 .animate-shimmer    { animation: shimmer 8s ease-in-out infinite; background-size: 200% 200%; }
 .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
 .animate-fade-up    { animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@keyframes reactionFloat {
+  0%   { opacity: 0; transform: translateY(0) scale(0.6) rotate(-6deg); }
+  15%  { opacity: 1; transform: translateY(-30px) scale(1.05) rotate(4deg); }
+  60%  { opacity: 1; transform: translateY(-130px) scale(1) rotate(-2deg); }
+  100% { opacity: 0; transform: translateY(-180px) scale(0.85) rotate(2deg); }
+}
+
+@keyframes speakDot {
+  0%, 100% { transform: scaleY(0.55); }
+  50%      { transform: scaleY(1); }
+}

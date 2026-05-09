@@ -1,15 +1,21 @@
-import { Link, useParams } from "@tanstack/react-router"
+import { Link, useParams, useRouterState } from "@tanstack/react-router"
 import { useQuery } from "convex/react"
 import { api } from "@/lib/api"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Plus, House } from "@phosphor-icons/react"
+import { Plus, House, ChatCircleDots } from "@phosphor-icons/react"
 import { initialsFromName } from "@/lib/format"
 import { CreateServerButton } from "@/components/create-server-button"
 
 export function ServerList() {
   const servers = useQuery(api.servers.list)
-  const params = useParams({ strict: false }) as { serverId?: string }
+  const params = useParams({ strict: false }) as {
+    serverId?: string
+    channelId?: string
+  }
+  const path = useRouterState({ select: (s) => s.location.pathname })
+  const onDms = path.startsWith("/app/dms")
+  const onHome = !params.serverId && !onDms
 
   return (
     <TooltipProvider delayDuration={120}>
@@ -22,15 +28,33 @@ export function ServerList() {
             >
               <span
                 className={`grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary transition-all group-hover:rounded-xl group-hover:bg-primary group-hover:text-primary-foreground ${
-                  !params.serverId ? "rounded-xl bg-primary text-primary-foreground" : ""
+                  onHome ? "rounded-xl bg-primary text-primary-foreground" : ""
                 }`}
               >
                 <House weight="fill" className="size-5" />
               </span>
-              <ActiveIndicator active={!params.serverId} />
+              <ActiveIndicator active={onHome} />
             </Link>
           </TooltipTrigger>
           <TooltipContent side="right">Home</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              to="/app/dms"
+              className="group relative flex size-12 items-center justify-center"
+            >
+              <span
+                className={`grid size-12 place-items-center rounded-2xl bg-card text-foreground transition-all group-hover:rounded-xl group-hover:bg-primary group-hover:text-primary-foreground ${
+                  onDms ? "rounded-xl bg-primary text-primary-foreground" : ""
+                }`}
+              >
+                <ChatCircleDots weight="fill" className="size-5" />
+              </span>
+              <ActiveIndicator active={onDms} />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right">Direct messages</TooltipContent>
         </Tooltip>
 
         <div className="my-1 h-px w-8 bg-border/60" />

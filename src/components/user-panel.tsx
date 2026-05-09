@@ -12,8 +12,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Gear, SignOut } from "@phosphor-icons/react"
+import { Gear, SignOut, Microphone } from "@phosphor-icons/react"
 import { initialsFromName } from "@/lib/format"
+import { useVoice } from "@/components/voice/voice-provider"
 
 const STATUS_LABELS = {
   online: "Online",
@@ -34,6 +35,7 @@ export function UserPanel() {
   const { user } = useUser()
   const { signOut } = useClerk()
   const setStatus = useMutation(api.users.updateStatus)
+  const voice = useVoice()
 
   if (!me) return <div className="h-13 border-t border-border/40" />
 
@@ -85,6 +87,10 @@ export function UserPanel() {
             )}
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => voice.setSettingsOpen(true)}>
+            <Microphone className="size-4" />
+            Voice settings
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut({ redirectUrl: "/" })}>
             <SignOut className="size-4" />
             Sign out

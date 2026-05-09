@@ -9,10 +9,11 @@ export const join = mutation({
     const channel = await ctx.db.get(args.channelId)
     if (!channel) throw new Error("Channel not found")
     if (channel.type !== "voice") throw new Error("Not a voice channel")
+    if (!channel.serverId) throw new Error("Channel has no server")
     const membership = await ctx.db
       .query("members")
       .withIndex("by_server_and_user", (q) =>
-        q.eq("serverId", channel.serverId).eq("userId", user._id),
+        q.eq("serverId", channel.serverId!).eq("userId", user._id),
       )
       .unique()
     if (!membership) throw new Error("Not a member")
@@ -51,10 +52,11 @@ export const listParticipants = query({
     const user = await getCurrentUserOrThrow(ctx)
     const channel = await ctx.db.get(args.channelId)
     if (!channel) return []
+    if (!channel.serverId) return []
     const membership = await ctx.db
       .query("members")
       .withIndex("by_server_and_user", (q) =>
-        q.eq("serverId", channel.serverId).eq("userId", user._id),
+        q.eq("serverId", channel.serverId!).eq("userId", user._id),
       )
       .unique()
     if (!membership) return []

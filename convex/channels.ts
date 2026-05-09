@@ -36,6 +36,15 @@ export const get = query({
     const user = await getCurrentUserOrThrow(ctx)
     const channel = await ctx.db.get(args.channelId)
     if (!channel) return null
+    if (channel.type === "dm") {
+      const dm = await ctx.db
+        .query("dmParticipants")
+        .withIndex("by_channel", (q) => q.eq("channelId", args.channelId))
+        .collect()
+      if (!dm.some((p) => p.userId === user._id)) return null
+      return channel
+    }
+    if (!channel.serverId) return null
     await ensureMember(ctx, channel.serverId, user._id)
     return channel
   },
@@ -79,6 +88,8 @@ export const rename = mutation({
     const user = await getCurrentUserOrThrow(ctx)
     const channel = await ctx.db.get(args.channelId)
     if (!channel) throw new Error("Channel not found")
+    if (channel.type === "dm") throw new Error("DMs cannot be renamed")
+    if (!channel.serverId) throw new Error("Channel has no server")
     const membership = await ensureMember(ctx, channel.serverId, user._id)
     if (membership.role === "member") throw new Error("Forbidden")
     const trimmed = args.name.trim().toLowerCase().replace(/\s+/g, "-")
@@ -95,6 +106,8 @@ export const remove = mutation({
     const user = await getCurrentUserOrThrow(ctx)
     const channel = await ctx.db.get(args.channelId)
     if (!channel) throw new Error("Channel not found")
+    if (channel.type === "dm") throw new Error("Use dms.remove for DMs")
+    if (!channel.serverId) throw new Error("Channel has no server")
     const membership = await ensureMember(ctx, channel.serverId, user._id)
     if (membership.role === "member") throw new Error("Forbidden")
 

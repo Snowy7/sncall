@@ -18,8 +18,11 @@ import { Route as SignUpSsoCallbackRouteImport } from './routes/sign-up.sso-call
 import { Route as SignUpContinueRouteImport } from './routes/sign-up.continue'
 import { Route as SignInSsoCallbackRouteImport } from './routes/sign-in.sso-callback'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
+import { Route as AppDmsRouteRouteImport } from './routes/app/dms/route'
 import { Route as AppServerIdRouteRouteImport } from './routes/app/$serverId/route'
+import { Route as AppDmsIndexRouteImport } from './routes/app/dms/index'
 import { Route as AppServerIdIndexRouteImport } from './routes/app/$serverId/index'
+import { Route as AppDmsChannelIdRouteImport } from './routes/app/dms/$channelId'
 import { Route as AppServerIdChannelIdRouteImport } from './routes/app/$serverId/$channelId'
 
 const SignUpRoute = SignUpRouteImport.update({
@@ -67,15 +70,30 @@ const InviteCodeRoute = InviteCodeRouteImport.update({
   path: '/invite/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppDmsRouteRoute = AppDmsRouteRouteImport.update({
+  id: '/dms',
+  path: '/dms',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppServerIdRouteRoute = AppServerIdRouteRouteImport.update({
   id: '/$serverId',
   path: '/$serverId',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppDmsIndexRoute = AppDmsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppDmsRouteRoute,
+} as any)
 const AppServerIdIndexRoute = AppServerIdIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppServerIdRouteRoute,
+} as any)
+const AppDmsChannelIdRoute = AppDmsChannelIdRouteImport.update({
+  id: '/$channelId',
+  path: '/$channelId',
+  getParentRoute: () => AppDmsRouteRoute,
 } as any)
 const AppServerIdChannelIdRoute = AppServerIdChannelIdRouteImport.update({
   id: '/$channelId',
@@ -89,13 +107,16 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
   '/app/$serverId': typeof AppServerIdRouteRouteWithChildren
+  '/app/dms': typeof AppDmsRouteRouteWithChildren
   '/invite/$code': typeof InviteCodeRoute
   '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
   '/sign-up/continue': typeof SignUpContinueRoute
   '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
   '/app/': typeof AppIndexRoute
   '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
+  '/app/dms/$channelId': typeof AppDmsChannelIdRoute
   '/app/$serverId/': typeof AppServerIdIndexRoute
+  '/app/dms/': typeof AppDmsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -107,7 +128,9 @@ export interface FileRoutesByTo {
   '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
   '/app': typeof AppIndexRoute
   '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
+  '/app/dms/$channelId': typeof AppDmsChannelIdRoute
   '/app/$serverId': typeof AppServerIdIndexRoute
+  '/app/dms': typeof AppDmsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,13 +139,16 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
   '/app/$serverId': typeof AppServerIdRouteRouteWithChildren
+  '/app/dms': typeof AppDmsRouteRouteWithChildren
   '/invite/$code': typeof InviteCodeRoute
   '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
   '/sign-up/continue': typeof SignUpContinueRoute
   '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
   '/app/': typeof AppIndexRoute
   '/app/$serverId/$channelId': typeof AppServerIdChannelIdRoute
+  '/app/dms/$channelId': typeof AppDmsChannelIdRoute
   '/app/$serverId/': typeof AppServerIdIndexRoute
+  '/app/dms/': typeof AppDmsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -132,13 +158,16 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/app/$serverId'
+    | '/app/dms'
     | '/invite/$code'
     | '/sign-in/sso-callback'
     | '/sign-up/continue'
     | '/sign-up/sso-callback'
     | '/app/'
     | '/app/$serverId/$channelId'
+    | '/app/dms/$channelId'
     | '/app/$serverId/'
+    | '/app/dms/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -150,7 +179,9 @@ export interface FileRouteTypes {
     | '/sign-up/sso-callback'
     | '/app'
     | '/app/$serverId/$channelId'
+    | '/app/dms/$channelId'
     | '/app/$serverId'
+    | '/app/dms'
   id:
     | '__root__'
     | '/'
@@ -158,13 +189,16 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/app/$serverId'
+    | '/app/dms'
     | '/invite/$code'
     | '/sign-in/sso-callback'
     | '/sign-up/continue'
     | '/sign-up/sso-callback'
     | '/app/'
     | '/app/$serverId/$channelId'
+    | '/app/dms/$channelId'
     | '/app/$serverId/'
+    | '/app/dms/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -240,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InviteCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/dms': {
+      id: '/app/dms'
+      path: '/dms'
+      fullPath: '/app/dms'
+      preLoaderRoute: typeof AppDmsRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/app/$serverId': {
       id: '/app/$serverId'
       path: '/$serverId'
@@ -247,12 +288,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppServerIdRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/dms/': {
+      id: '/app/dms/'
+      path: '/'
+      fullPath: '/app/dms/'
+      preLoaderRoute: typeof AppDmsIndexRouteImport
+      parentRoute: typeof AppDmsRouteRoute
+    }
     '/app/$serverId/': {
       id: '/app/$serverId/'
       path: '/'
       fullPath: '/app/$serverId/'
       preLoaderRoute: typeof AppServerIdIndexRouteImport
       parentRoute: typeof AppServerIdRouteRoute
+    }
+    '/app/dms/$channelId': {
+      id: '/app/dms/$channelId'
+      path: '/$channelId'
+      fullPath: '/app/dms/$channelId'
+      preLoaderRoute: typeof AppDmsChannelIdRouteImport
+      parentRoute: typeof AppDmsRouteRoute
     }
     '/app/$serverId/$channelId': {
       id: '/app/$serverId/$channelId'
@@ -277,13 +332,29 @@ const AppServerIdRouteRouteChildren: AppServerIdRouteRouteChildren = {
 const AppServerIdRouteRouteWithChildren =
   AppServerIdRouteRoute._addFileChildren(AppServerIdRouteRouteChildren)
 
+interface AppDmsRouteRouteChildren {
+  AppDmsChannelIdRoute: typeof AppDmsChannelIdRoute
+  AppDmsIndexRoute: typeof AppDmsIndexRoute
+}
+
+const AppDmsRouteRouteChildren: AppDmsRouteRouteChildren = {
+  AppDmsChannelIdRoute: AppDmsChannelIdRoute,
+  AppDmsIndexRoute: AppDmsIndexRoute,
+}
+
+const AppDmsRouteRouteWithChildren = AppDmsRouteRoute._addFileChildren(
+  AppDmsRouteRouteChildren,
+)
+
 interface AppRouteRouteChildren {
   AppServerIdRouteRoute: typeof AppServerIdRouteRouteWithChildren
+  AppDmsRouteRoute: typeof AppDmsRouteRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppServerIdRouteRoute: AppServerIdRouteRouteWithChildren,
+  AppDmsRouteRoute: AppDmsRouteRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
 }
 
